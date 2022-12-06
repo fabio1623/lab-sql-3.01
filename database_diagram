@@ -1,0 +1,143 @@
+Table sakila.actor {
+  actor_id smallint [pk, increment]
+  person_id smallint [ref: > sakila.person.person_id]
+  last_update timestamp
+}
+
+Table sakila.country {
+  country_id smallint [pk, increment]
+  country varchar(50)
+  last_update timestamp
+}
+
+Table sakila.category {
+  category_id tinyint [pk, increment]
+  name varchar(25)
+  last_update timestamp
+}
+
+Table sakila.film {
+  film_id smallint [pk, increment]
+  title varchar(20)
+  description text
+  release_year year
+  length smallint
+  rating sakila.film_rating_enum
+  special_features set('Trailers', 'Commentaries', 'Deleted Scenes', 'Behind the Scenes')
+  last_update timestamp
+}
+
+Table sakila.language {
+  language_id tinyint [pk, increment]
+  name char(20)
+  last_update timestamp
+}
+
+Table sakila.address {
+  address_id smallint [pk, increment]
+  address varchar(50)
+  address2 varchar(50)
+  district varchar(20)
+  city_id smallint [ref: > sakila.city.city_id]
+  postal_code smallint
+  phone varchar(20)
+  last_update timestamp
+}
+
+Table sakila.inventory {
+  inventory_id mediumint [pk, increment]
+  film_id smallint [ref: > sakila.film.film_id]
+  store_id tinyint [ref: > sakila.store.store_id]
+  replacement_cost decimal(5,2)
+  last_update timestamp
+}
+
+Table sakila.person {
+  person_id smallint [pk, increment]
+  first_name varchar(45)
+  last_name varchar(45)
+  email varchar(50)
+  address_id smallint [ref: > sakila.address.address_id]
+  active boolean
+  create_date datetime
+  picture blob
+  last_update timestamp
+}
+
+Table sakila.customer {
+  person_id smallint [pk, ref: > sakila.person.person_id]
+  store_id tinyint [pk, ref: > sakila.store.store_id]
+  last_update timestamp
+}
+
+Table sakila.staff {
+  person_id smallint [pk, ref: > sakila.person.person_id]
+  store_id tinyint [pk, ref: > sakila.store.store_id]
+  username varchar(16)
+  password varchar(40)
+  last_update timestamp
+}
+
+Table sakila.city {
+  city_id smallint [pk, increment]
+  city varchar(50)
+  country_id smallint [ref: > sakila.country.country_id]
+  last_update timestamp
+}
+
+Table sakila.rental {
+  rental_id int [pk, increment]
+  rental_date datetime
+  inventory_id mediumint [ref: > sakila.inventory.inventory_id]
+  customer_person_id smallint [ref: > sakila.customer.person_id]
+  customer_store_id tinyint [ref: > sakila.customer.store_id]
+  return_date datetime
+  staff_person_id smallint [ref: > sakila.staff.person_id]
+  staff_store_id tinyint [ref: > sakila.staff.store_id]
+}
+
+Table sakila.store {
+  store_id tinyint [pk, increment]
+  manager_staff_id tinyint [ref: > sakila.staff.store_id]
+  address_id smallint [ref: > sakila.address.address_id]
+  last_update timestamp
+}
+
+Table sakila.payment {
+  payment_id smallint [pk, increment]
+  customer_person_id smallint [ref: > sakila.customer.person_id]
+  customer_store_id tinyint [ref: > sakila.customer.store_id]
+  staff_person_id smallint [ref: > sakila.staff.person_id]
+  staff_store_id tinyint [ref: > sakila.staff.store_id]
+  rental_id int [ref: > sakila.rental.rental_id]
+  amount decimal(5,2)
+  payment_date datetime
+  last_update timestamp
+}
+
+Enum sakila.film_rating_enum {
+  PG
+  G
+  NC_17 [note: 'NC-17']
+  PG_13 [note: 'PG-13']
+  R
+}
+
+// Relationships
+Table sakila.film_category {
+  film_id smallint [pk, ref: <> sakila.film.film_id]
+  category_id tinyint [pk, ref: <> sakila.category.category_id]
+  last_update timestamp
+}
+
+Table sakila.film_actor {
+  film_id smallint [pk, ref: <> sakila.film.film_id]
+  actor_id smallint [pk, ref: <> sakila.actor.actor_id]
+  last_update timestamp
+}
+
+Table sakila.film_language {
+  film_id smallint [pk, ref: <> sakila.film.film_id]
+  language_id tinyint [pk, ref: <> sakila.language.language_id]
+  last_update timestamp
+}
